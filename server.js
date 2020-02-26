@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
-const cors = require('cors');
+const cors = require("cors");
 const config = require("./src/config");
 const routes = require("./src/routes");
 
@@ -16,6 +16,6 @@ app.use(bodyParser.json());
 app.use(routes);
 
 app.listen(config.PORT, err => {
-	if (err) console.error(err);
-	console.log("Server started on " + config.PORT);
+  if (err) console.error(err);
+  console.log("Server started on " + config.PORT);
 });
