@@ -1,137 +1,67 @@
+html {
+  font-size: 1.2em;
+}
 body {
-	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
-	color: #333333;
-	margin: 0;
-	line-height: 1.5;
-	-webkit-font-smoothing: antialiased;
-	-webkit-text-size-adjust: 100%;
+  margin: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  margin: auto;
 }
 .wrapper {
-	width: 100%;
-	max-width: 768px;
-	margin: auto;
-	box-sizing: border-box;
-	padding: 0px 10px;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
 }
 .mono {
-	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
-	font-size: 0.9rem;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-size: 0.9rem;
 }
-#home {
-	min-height: 80vh;
-}
-#brand {
-	font-size: 3rem;
-	text-align: center;
-	padding-top: 5rem;
-}
-#brand #logo {
-	width: 3rem;
-	height: 3rem;
-	display: inline-block;
-	position: relative;
-	top: 0.6rem;
-}
-#desc {
-	text-align: center;
-	font-size: 1.5rem;
-	line-height: 3;
-}
-#randomwrap,
-#dashControlsWrap {
-	margin-top: 3rem;
-}
-#randombox,
-#dashControls {
-	display: flex;
-	justify-content: space-between;
-	flex-direction: column;
-	width: 100%;
-	max-width: 560px;
-	margin: auto;
-	border-radius: 10px;
-}
-#dashControls {
-	max-width: 640px;
-	flex-direction: row;
+h1,
+h3 {
+  font-weight: normal;
 }
 
-#randombox input,
-#dashControls input {
-	width: 100%;
-	flex: 1;
-	font-size: 1rem;
-	background: none;
-	border: none;
-	outline: 0;
-	padding: 15px 10px;
-	background: #efefef;
-	color: #333333;
-	border-radius: 5px;
-	box-sizing: border-box;
+#title {
+  margin-top: 2rem;
+  display: flex;
 }
-#randombox #buttonwrap {
-	display: flex;
-	margin-top: 10px;
-	justify-content: space-between;
-}
-#randombox #buttonwrap button,
-#dashControls button {
-	width: 45%;
-	font-size: 0.9rem;
-	padding: 15px;
-	background: none;
-	border: none;
-	background: #3498db;
-	border: 2px solid #3498db;
-	color: #ffffff;
-	border-radius: 0;
-	border-radius: 5px;
-	cursor: pointer;
-	box-sizing: border-box;
-}
-#dashboardBtn {
-	background: none !important;
-	color: #3498db !important;
-}
-#nav {
-	font-size: 0.9rem;
-	text-align: center;
-	margin-top: 20vh;
-	margin-bottom: 20px;
-}
-#dashControls select {
-	margin-right: 10px;
-	font-size: 1rem;
-	border: none;
-	outline: 0;
-	padding: 15px 10px;
-	background: #efefef;
-	color: #333333;
-}
-#dashControls #boxurl {
-	flex: 1;
-}
-#dashControls button {
-	width: 60px;
-	margin-left: 10px;
+#title #logo {
+  margin-right: 1rem;
 }
 
+#logo svg {
+  width: 100px;
+  height: 100px;
+  transform: translateY(-50%);
+}
 
-#datawrap {
-	display: flex;
-	justify-content: space-between;
-	margin: 5%;
+#title span {
+  flex: 1;
+  font-size: 1.8rem;
+  line-height: 48px;
 }
-#inputwrap,
-#outputwrap {
-	flex: 1;
-	margin-top: 30px;
+
+#subtitle {
+  font-size: 1.3rem;
+  font-style: italic;
 }
-#test-jsonbox #editor,
-#test-jsonbox #output {
-	resize: none;
-	width: 95%;
-	min-height: 300px;
-	border-radius: 5px;
+
+#random {
+  display: flex;
+}
+
+#random input {
+  margin: 0;
+  width: 500px;
+}
+
+#random button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

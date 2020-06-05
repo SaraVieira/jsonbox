@@ -1,8 +1,10 @@
 const helper = require("./helper");
 const Db = require("./db").getInstance();
 
-// remove the native keys from req.body
-const removeNativeKeys = (req, _, next) => {
+const Data = require("./db").getInstance();
+
+// remove the system keys from req.body
+const removeNativeKeys = (req, res, next) => {
   delete req.body._id;
   delete req.body._createdOn;
   delete req.body._updatedOn;
@@ -16,6 +18,7 @@ const sizeValidator = (req, res, next) => {
     if (Object.keys(req.body).length > 0) {
       const memorySize = helper.memorySizeOf(req.body);
       req["bodySize"] = memorySize;
+
       // memorySize is size in bytes. 10KB  => 10 * 1024
       if (memorySize > 10 * 1024) {
         throwError("JSON body is too large. Should be less than 10KB", 413);
@@ -29,7 +32,7 @@ const sizeValidator = (req, res, next) => {
 };
 
 // The Body top level keys should start with an alphabet
-const keysValidator = (req, _, next) => {
+const keysValidator = (req, res, next) => {
   let validKeys = Array.isArray(req.body)
     ? req.body.every(helper.isValidKeys)
     : helper.isValidKeys(req.body);
@@ -38,13 +41,21 @@ const keysValidator = (req, _, next) => {
 };
 
 // extract the box, collection, record ids from the path
-const extractParams = (req, _, next) => {
+const extractParams = (req, res, next) => {
   const path = req.path;
-  const pathParams = path.split("/").filter(p => !!p);
+  const pathParams = path.split("/").filter((p) => !!p);
   const isHexString = /^([0-9A-Fa-f]){24}$/;
   const isValidBoxID = /^[0-9A-Za-z_]+$/i;
+
+  req["apiKey"] =
+    req.headers["x-api-key"] ||
+    (req.headers["authorization"]
+      ? req.headers["authorization"].split(" ")[1]
+      : null);
+
   if (pathParams[0]) {
     req["box"] = isValidBoxID.test(pathParams[0]) ? pathParams[0] : undefined;
+
     if (pathParams[1]) {
       const isObjectId = isHexString.test(pathParams[1]);
       if (isObjectId) req["recordId"] = pathParams[1];
@@ -53,25 +64,52 @@ const extractParams = (req, _, next) => {
           ? pathParams[1]
           : undefined;
     }
+
     if (!req["recordId"] && pathParams[2]) {
       req["recordId"] = isHexString.test(pathParams[2])
         ? pathParams[2]
         : undefined;
     }
+
     next();
   } else throwError("Box id cannot be empty.");
 };
 
 // check if all the required parameters is present
-const validateParams = (req, _, next) => {
-  if (!req.box) throwError("Invalid or empty box id");
-  else if (req.collection ? req.collection.length > 20 : false)
-    throwError("Collection name can't be more than 20 chars.");
-  else if (req.method === "PUT" || req.method === "DELETE") {
-    if (!req.recordId) throwError("Invalid or empty record id");
-    else if (Array.isArray(req.body)) throwError("Bulk update not supported.");
-    else next();
+const validateParams = (req, res, next) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (!req.box) {
+    throwError("Invalid or empty box id");
+  } else if (req.method === "PUT" || req.method === "DELETE") {
+    if (!req.recordId && !req.query.q) {
+      throwError("Invalid or empty record id or missing query definition");
+    } else if (Array.isArray(req.body)) {
+      throwError("Bulk update not supported.");
+    } else next();
   } else next();
+};
+
+// Check if the Request has a valid API_KEY
+const authenticateRequest = async (req, res, next) => {
+  try {
+    const firstRecord = await Data.findOne({ _box: req.box })
+      .select("_apiKey")
+      .sort("-_createdOn")
+      .exec();
+    if (firstRecord) {
+      if (firstRecord._apiKey) {
+        if (firstRecord._apiKey == req["apiKey"]) next();
+        else throwError("Invalid API_KEY.", 401);
+      } else {
+        // dont pass API_KEY if the first data does not have key
+        req["apiKey"] = null;
+        next();
+      }
+    } else next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 const throwError = (message, code = 400) => {
@@ -85,5 +123,6 @@ module.exports = {
   sizeValidator,
   keysValidator,
   extractParams,
-  validateParams
+  validateParams,
+  authenticateRequest,
 };

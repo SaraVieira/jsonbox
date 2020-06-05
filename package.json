@@ -1,12 +1,13 @@
 {
   "name": "jsonbox",
-  "version": "1.0.1",
-  "description": "Free HTTP based JSON storage.",
+  "version": "2.0.0",
+  "description": "A Free HTTP based JSON storage.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js --watch src --watch www"
+    "dev": "nodemon server.js",
+    "dev-test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -28,10 +29,12 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-rate-limit": "^5.0.0",
-    "mongoose": "^5.7.8"
+    "express-rate-limit": "^5.1.1",
+    "mongoose": "^5.9.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "fetch-lite": "^1.1.0",
+    "mocha": "^7.1.1",
+    "nodemon": "^2.0.4"
   }
 }
