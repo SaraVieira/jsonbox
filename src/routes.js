@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const rateLimit = require("express-rate-limit");
 
 const model = require("./model");
 const validators = require("./validators");

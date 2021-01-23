@@ -13,8 +13,12 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "www")));
 app.use(bodyParser.json());
 
-app.get("/v2", (req, res) =>
+app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "www/index.html"))
+);
+
+app.get("/useful", (req, res) =>
+  res.sendFile(path.join(__dirname, "www/useful.html"))
 );
 
 app.use(routes);
