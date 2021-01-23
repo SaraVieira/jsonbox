@@ -1,4 +1,5 @@
 const helper = require('./helper');
+const config = require('./config');
 const Data = require('./db').getInstance();
 
 const xpost = async (req, res, next) => {
@@ -10,6 +11,7 @@ const xpost = async (req, res, next) => {
 			if (req.collection) record['_collection'] = req.collection;
 			if (req.apiKey) record['_apiKey'] = req.apiKey;
 			record['_createdOn'] = date;
+			record['_expiry'] = helper.getExpiryDate();
 			record['data'] = body;
 
 			const newRecord = await new Data(record).save();
@@ -66,13 +68,11 @@ const xput = async (req, res, next) => {
 	try {
 		const record = await Data.findOne({ _id: req.recordId, _box: req.box }).exec();
 		if (record) {
-			await Data.updateOne(
-				{ _id: req.recordId, _box: req.box },
-				{
-					_updatedOn: new Date(),
-					data: req.body
-				}
-			);
+			await Data.updateOne({ _id: req.recordId, _box: req.box }, {
+				_updatedOn: new Date(),
+				_expiry: helper.getExpiryDate(),
+				data: req.body
+			});
 			res.json({ message: 'Record updated.' });
 		} else {
 			res.status(400).json({ message: 'Invalid record Id' });
@@ -112,16 +112,17 @@ const xmeta = async (req, res, next) => {
 		const promises = [
 			Data.countDocuments(query).exec(),
 			Data.findOne(query)
-				.sort('_createdOn')
-				.exec(),
+			.sort('_createdOn')
+			.exec(),
 			Data.findOne(query)
-				.sort('-_updatedOn')
-				.exec()
+			.sort('-_updatedOn')
+			.exec()
 		];
 
 		const result = {};
 		Promise.all(promises).then(function(values) {
 			result['_count'] = values[0];
+			result['_sizeLimit'] = config.SIZE_LIMIT;
 
 			if (values[0] > 0) {
 				// get first _createdOn

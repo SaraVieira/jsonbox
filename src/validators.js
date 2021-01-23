@@ -1,5 +1,4 @@
 const helper = require("./helper");
-const Db = require("./db").getInstance();
 
 const Data = require("./db").getInstance();
 
@@ -33,46 +32,36 @@ const sizeValidator = (req, res, next) => {
 
 // The Body top level keys should start with an alphabet
 const keysValidator = (req, res, next) => {
-  let validKeys = Array.isArray(req.body)
-    ? req.body.every(helper.isValidKeys)
-    : helper.isValidKeys(req.body);
-  if (validKeys) next();
-  else throwError("Invalid JSON keys. Keys should start with an alphabet");
+	let validKeys = Array.isArray(req.body) ? req.body.every(helper.isValidKeys) : helper.isValidKeys(req.body);
+	if (validKeys) next();
+	else throwError("Invalid JSON keys. Keys should start with an alphabet");
 };
 
 // extract the box, collection, record ids from the path
 const extractParams = (req, res, next) => {
-  const path = req.path;
-  const pathParams = path.split("/").filter((p) => !!p);
-  const isHexString = /^([0-9A-Fa-f]){24}$/;
-  const isValidBoxID = /^[0-9A-Za-z_]+$/i;
+	const path = req.path;
+	const pathParams = path.split("/").filter((p) => !!p);
+	const isHexString = /^([0-9A-Fa-f]){24}$/;
+	const isValidBoxID = /^[0-9A-Za-z_]+$/i;
 
-  req["apiKey"] =
-    req.headers["x-api-key"] ||
-    (req.headers["authorization"]
-      ? req.headers["authorization"].split(" ")[1]
-      : null);
+	req["apiKey"] =
+		req.headers["x-api-key"] || (req.headers["authorization"] ? req.headers["authorization"].split(" ")[1] : null);
 
-  if (pathParams[0]) {
-    req["box"] = isValidBoxID.test(pathParams[0]) ? pathParams[0] : undefined;
+	if (pathParams[0]) {
+		req["box"] = isValidBoxID.test(pathParams[0]) ? pathParams[0] : undefined;
 
-    if (pathParams[1]) {
-      const isObjectId = isHexString.test(pathParams[1]);
-      if (isObjectId) req["recordId"] = pathParams[1];
-      else
-        req["collection"] = isValidBoxID.test(pathParams[1])
-          ? pathParams[1]
-          : undefined;
-    }
+		if (pathParams[1]) {
+			const isObjectId = isHexString.test(pathParams[1]);
+			if (isObjectId) req["recordId"] = pathParams[1];
+			else req["collection"] = isValidBoxID.test(pathParams[1]) ? pathParams[1] : undefined;
+		}
 
-    if (!req["recordId"] && pathParams[2]) {
-      req["recordId"] = isHexString.test(pathParams[2])
-        ? pathParams[2]
-        : undefined;
-    }
+		if (!req["recordId"] && pathParams[2]) {
+			req["recordId"] = isHexString.test(pathParams[2]) ? pathParams[2] : undefined;
+		}
 
-    next();
-  } else throwError("Box id cannot be empty.");
+		next();
+	} else throwError("Box id cannot be empty.");
 };
 
 // check if all the required parameters is present
