@@ -65,3 +65,12 @@ h3 {
   align-items: center;
   justify-content: center;
 }
+
+#redband {
+	background: #e74c3c;
+	color: #fff;
+	padding: 10px;
+	border-radius: 5px;
+	font-size: 14px;
+	margin: 10px auto;
+}
