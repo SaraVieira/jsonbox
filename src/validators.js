@@ -66,9 +66,7 @@ const extractParams = (req, res, next) => {
 
 // check if all the required parameters is present
 const validateParams = (req, res, next) => {
-  if (!req.box) {
-    throwError("Empty box id");
-  } else if (req.method === "PUT" || req.method === "DELETE") {
+  if (req.method === "PUT" || req.method === "DELETE") {
     if (!req.recordId && !req.query.q) {
       throwError("Invalid or empty record id or missing query definition");
     } else if (Array.isArray(req.body)) {
